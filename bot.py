@@ -36,6 +36,7 @@ class StrawberryLamb(commands.Bot):
 
         self.start_time = datetime.utcnow()
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.prefixes = {}
 
     async def on_ready(self):
         print(f'\nLogged in as: {bot.user.name} - {bot.user.id}\n'
@@ -67,13 +68,14 @@ else:
 bot = StrawberryLamb()
 bot.pool = pool
 
-extensions = [f[:-3] for f in os.listdir('./cogs') if f.endswith('.py')]
-print(f'Exts: {extensions}')
+ignored = []
+extensions = ['jishaku']
+extensions += [f[:-3] for f in os.listdir('./cogs') if f.endswith('.py') and f[:-3] not in ignored]
 total = len(extensions)
 successes = 0
 for ext in extensions:
     try:
-        bot.load_extension(ext)
+        bot.load_extension(f'cogs.{ext}')
         print(f'Successfully loaded extension {ext}.')
         successes += 1
     except Exception:

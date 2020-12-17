@@ -95,10 +95,12 @@ class Context(commands.Context):
             except:
                 traceback.print_exc()
 
-    async def safe_send(self, content, file=False, filename='message_too_long.txt', url='https://mystb.in', **kwargs):
+    async def safe_send(self, content, file=False, filename='message_too_long.txt', url='https://mystb.in', code=None , **kwargs):
         """Sends to ctx.channel if possible, upload to hastebin or send text file if too long"""
-        if len(content) <= 2000:
-            return await self.send(content, **kwargs)
+        cb = f'```{code}\n{content}\n```' if code is not None else content
+
+        if len(cb) <= 2000:
+            return await self.send(cb, **kwargs)
         elif file:
             fp = io.BytesIO(content.encode())
             return await self.send(file=discord.File(fp, filename=filename), **kwargs)
