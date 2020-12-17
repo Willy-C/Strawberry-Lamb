@@ -11,7 +11,7 @@ UPVOTE = '<:tick:785940102353780736>'
 DOWNVOTE = '<:cross:785940102542655539>'
 
 
-class Chloe(commands.Cog):
+class SchoolGate(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -50,4 +50,4 @@ class Chloe(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Chloe(bot))
+    bot.add_cog(SchoolGate(bot))

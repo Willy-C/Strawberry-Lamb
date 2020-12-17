@@ -2,31 +2,17 @@ import discord
 from discord.ext import commands
 from collections import Counter
 
-
-def can_manage_messages():
-    async def predicate(ctx):
-        if await ctx.bot.is_owner(ctx.author):
-            return True
-        if ctx.channel.permissions_for(ctx.author).manage_messages:
-            return True
-        raise commands.MissingPermissions(['Manage Messages'])
-    return commands.check(predicate)
+from utils.checks import can_manage_messages
 
 
 class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mod_level = {}
-
-    def get_mod_level(self, member: discord.Member):
-        role_ids = {role.id for role in member.roles}
-        highest_role = max(set(self.mod_level) & role_ids, key=self.mod_level.get, default=None)
-        return self.mod_level.get(highest_role, -float('inf'))
 
     def hierarchy_check(self, ctx, moderator: discord.Member, target: discord.Member):
         return (self.bot.owner_id == moderator.id or
                 ctx.guild.owner_id == moderator.id or
-                self.get_mod_level(moderator) > self.get_mod_level(target)) \
+                self.bot.get_mod_level(moderator) > self.bot.get_mod_level(target)) \
                and ctx.guild.owner_id != target.id
 
     def bot_hierarchy_check(self, ctx, target: discord.Member):
@@ -48,8 +34,10 @@ class Mod(commands.Cog):
 
     @commands.command()
     @can_manage_messages()
-    async def clean(self, ctx, limit: int = 25):
-        """Cleans up the bot's messages"""
+    async def clean(self, ctx, limit: int = 20):
+        """Cleans up the bot's messages
+        Searches through the last `limit` messages
+        Defaults to 20 if not specified"""
         if ctx.me.permissions_in(ctx.channel).manage_messages:
             spam = await self._good_clean(ctx, limit)
         else:

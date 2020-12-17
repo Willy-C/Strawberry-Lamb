@@ -25,7 +25,7 @@ class StrawberryLamb(commands.Bot):
 
         self.start_time = datetime.utcnow()
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.prefixes = {}
+        self.mod_level = {}
 
     async def on_ready(self):
         print(f'\nLogged in as: {bot.user.name} - {bot.user.id}\n'
@@ -40,6 +40,11 @@ class StrawberryLamb(commands.Bot):
         await self.session.close()
         await super().close()
         await asyncio.wait_for(self.pool.close(), timeout=20)
+
+    def get_mod_level(self, member: discord.Member):
+        role_ids = {role.id for role in member.roles}
+        highest_role = max(set(self.mod_level) & role_ids, key=self.mod_level.get, default=None)
+        return self.mod_level.get(highest_role, -float('inf'))
 
 
 async def db_init(con):
