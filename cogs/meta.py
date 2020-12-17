@@ -11,7 +11,7 @@ class Meta(commands.Cog):
     async def uptime(self, ctx, simple: bool = False):
         """Returns the bot's uptime
         Pass in True to view simplified time"""
-        await ctx.send(f'Uptime: {human_timedelta(self.bot.starttime, accuracy=None, brief=simple, suffix=False)}')
+        await ctx.send(f'Uptime: {human_timedelta(self.bot.start_time, accuracy=None, brief=simple, suffix=False)}')
 
 
 def setup(bot):

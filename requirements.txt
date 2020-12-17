@@ -2,3 +2,4 @@ discord.py
 asyncpg
 tabulate
 jishaku
+python-dateutil
