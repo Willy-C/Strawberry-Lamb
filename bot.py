@@ -57,18 +57,18 @@ else:
 bot = StrawberryLamb()
 bot.pool = pool
 
-ignored = ['cogs.mod']
+ignored = []
 extensions = ['jishaku']
-extensions += [f[:-3] for f in os.listdir('./cogs') if f.endswith('.py') and f[:-3] not in ignored]
+extensions += [f'cogs.{f[:-3]}' for f in os.listdir('./cogs') if f.endswith('.py') and f[:-3] not in ignored]
 total = len(extensions)
 successes = 0
 for ext in extensions:
     try:
-        bot.load_extension(f'cogs.{ext}')
-        print(f'Successfully loaded extension {ext}.')
+        bot.load_extension(ext)
+        print(f'Successfully loaded extension {ext}')
         successes += 1
     except Exception:
-        print(f'Failed to load extension {ext}.')
+        print(f'Failed to load extension {ext}')
         traceback.print_exc()
 
 print('-' * 52)

@@ -12,6 +12,7 @@ from utils.common import cleanup_code, upload_hastebin
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self._last_result = None
 
     async def cog_check(self, ctx):
         if not await ctx.bot.is_owner(ctx.author):
