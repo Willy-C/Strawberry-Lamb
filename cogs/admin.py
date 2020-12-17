@@ -27,6 +27,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='listen', aliases=['l'])
     async def listen(self, ctx, *, name):
+        """Listening to ..."""
         botmember = self.get_bot_member(ctx)
         status = botmember.status
         await self.bot.change_presence(activity=discord.Activity(name=name, type=discord.ActivityType.listening),
@@ -35,6 +36,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='playing', aliases=['play', 'p'])
     async def playing(self, ctx, *, name):
+        """Playing ..."""
         botmember = self.get_bot_member(ctx)
         status = botmember.status
         await self.bot.change_presence(activity=discord.Game(name=name), status=status)
@@ -42,6 +44,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='streaming', aliases=['s'])
     async def streaming(self, ctx, name, url=None):
+        """Streaming ..."""
         botmember = self.get_bot_member(ctx)
         status = botmember.status
         url = url or 'https://www.twitch.tv/directory'
@@ -50,6 +53,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='watching', aliases=['w'])
     async def watching(self, ctx, *, name):
+        """Watching ..."""
         botmember = self.get_bot_member(ctx)
         status = botmember.status
         await self.bot.change_presence(activity=discord.Activity(name=name, type=discord.ActivityType.watching),
@@ -58,6 +62,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='competing', aliases=['c'])
     async def competing(self, ctx, *, name):
+        """Competing in ..."""
         botmember = self.get_bot_member(ctx)
         status = botmember.status
         await self.bot.change_presence(activity=discord.Activity(name=name, type=discord.ActivityType.competing),
@@ -66,6 +71,7 @@ class Admin(commands.Cog):
 
     @change_presence.command(name='status')
     async def status(self, ctx, status):
+        """Set status to Online/Idle/DND/Invisible"""
         statuses = {'online': discord.Status.online,
                     'offline': discord.Status.invisible,
                     'invis': discord.Status.invisible,
@@ -80,14 +86,10 @@ class Admin(commands.Cog):
         await self.bot.change_presence(status=statuses[status], activity=activity)
         await ctx.tick()
 
-    @change_presence.command()
+    @change_presence.command(aliases=['reset'])
     async def clear(self, ctx):
+        """Remove activity and set status to Online"""
         await self.bot.change_presence()
-        await ctx.tick()
-
-    @change_presence.command()
-    async def reset(self, ctx):
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='you :)'))
         await ctx.tick()
 
 
