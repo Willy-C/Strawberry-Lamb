@@ -100,6 +100,43 @@ class Owner(commands.Cog):
         await ctx.message.add_reaction('\U0001f620')
         await ctx.bot.logout()
 
+    @commands.command(name='load')
+    async def load_cog(self, ctx, *, cog: str):
+        """Loads a Module.
+        Accepts dot path. e.g: cogs.owner"""
+
+        try:
+            self.bot.load_extension(cog)
+        except Exception as e:
+            await ctx.send(f'<:redTick:602811779474522113> {type(e).__name__} - {e}')
+        else:
+            await ctx.send(f'<:greenTick:602811779835494410> loaded {cog}')
+
+    @commands.command(name='unload')
+    async def unload_cog(self, ctx, *, cog: str):
+        """ Unloads a Module.
+        Accepts dot path. e.g: cogs.owner"""
+        try:
+            self.bot.unload_extension(cog)
+        except Exception as e:
+            await ctx.send(f'<:redTick:602811779474522113> {type(e).__name__} - {e}')
+        else:
+            await ctx.send(f'<:greenTick:602811779835494410> unloaded {cog}')
+
+    @commands.command(name='reload')
+    async def reload_cog(self, ctx, *, cog: str):
+        """Reloads a Module.
+        Accepts dot path e.g: cogs.owner"""
+        try:
+            try:
+                self.bot.reload_extension(cog)
+            except commands.ExtensionNotLoaded:
+                self.bot.load_extension(cog)
+        except Exception as e:
+            await ctx.send(f'<:redTick:602811779474522113> {type(e).__name__} - {e}')
+        else:
+            await ctx.send(f'<:greenTick:602811779835494410> reloaded {cog}')
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

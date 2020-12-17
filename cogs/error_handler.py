@@ -78,3 +78,11 @@ class CommandErrorHandler(commands.Cog):
             await self.owner.send(f'Traceback too long. {url}')
         else:
             await self.owner.send(f'```py\n{tb}```')
+
+
+def setup(bot):
+    bot.add_cog(CommandErrorHandler(bot))
+
+
+def teardown(bot):
+    bot.on_error = commands.Bot.on_error
