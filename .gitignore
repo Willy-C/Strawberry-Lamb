@@ -108,3 +108,4 @@ venv.bak/
 
 config.py
 utils/time.py
+cogs/logger.py
