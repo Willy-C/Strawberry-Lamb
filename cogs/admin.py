@@ -6,6 +6,14 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        return ctx.author.id == self.bot.get_guild(758919988965801984).owner_id or await ctx.bot.is_owner(ctx.author)
+
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            ctx.local_handled = True
+            # Silently ignore commands not used by the owner
+
     def get_bot_member(self, ctx):
         if ctx.guild is None:
             botmember = self.bot.guilds[0].me
