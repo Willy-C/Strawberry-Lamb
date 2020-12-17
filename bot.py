@@ -14,20 +14,9 @@ from config import BOT_TOKEN, DBURI
 from utils.context import Context
 
 
-def get_prefix(bot, message):
-    """A callable prefix for our bot. Returns a list of valid prefixes for the guild"""
-    bot_id = bot.user.id
-    prefixes = [f'<@{bot_id}> ', f'<@!{bot_id}> ']  # Accept mentioning the bot as prefix
-    if message.guild is None:
-        prefixes.append('%')
-    else:
-        prefixes.extend(bot.prefixes.get(message.guild.id, '%'))
-    return prefixes
-
-
 class StrawberryLamb(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=get_prefix,
+        super().__init__(command_prefix=commands.when_mentioned_or('-'),
                          help_command=commands.MinimalHelpCommand(),
                          description='Bot for Strawberry Lamb server',
                          case_insensitive=True,
@@ -68,7 +57,7 @@ else:
 bot = StrawberryLamb()
 bot.pool = pool
 
-ignored = []
+ignored = ['cogs.mod']
 extensions = ['jishaku']
 extensions += [f[:-3] for f in os.listdir('./cogs') if f.endswith('.py') and f[:-3] not in ignored]
 total = len(extensions)
