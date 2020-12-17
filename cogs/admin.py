@@ -86,10 +86,17 @@ class Admin(commands.Cog):
         await self.bot.change_presence(status=statuses[status], activity=activity)
         await ctx.tick()
 
-    @change_presence.command(aliases=['reset'])
+    @change_presence.command()
     async def clear(self, ctx):
         """Remove activity and set status to Online"""
         await self.bot.change_presence()
+        await ctx.tick()
+
+    @change_presence.command()
+    async def reset(self, ctx):
+        """Reset activity to default"""
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
+                                                                 name='over the school'))
         await ctx.tick()
 
 

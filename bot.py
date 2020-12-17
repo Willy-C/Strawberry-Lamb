@@ -21,7 +21,8 @@ class StrawberryLamb(commands.Bot):
                          description='Bot for Strawberry Lamb server',
                          case_insensitive=True,
                          intents=discord.Intents.all(),
-                         allowed_mentions=discord.AllowedMentions(everyone=False))
+                         allowed_mentions=discord.AllowedMentions(everyone=False),
+                         activity=discord.Activity(type=discord.ActivityType.watching, name='over the school'))
 
         self.start_time = datetime.utcnow()
         self.session = aiohttp.ClientSession(loop=self.loop)
