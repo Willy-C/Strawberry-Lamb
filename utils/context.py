@@ -41,13 +41,13 @@ class Context(commands.Context):
                 await prompt.delete()
 
     async def confirm_reaction(self, msg):
-        emojis = ['<:greenTick:602811779835494410>', '<:redTick:602811779474522113>']
+        emojis = ['<:tick:785940102353780736>', '<:cross:785940102542655539>']
 
         def confirm(r, u):
             return self.author.id == u.id and prompt == r.message and str(r.emoji) in emojis
 
         prompt = await self.send(f'{msg}\n'
-                                f'Please react with <:greenTick:602811779835494410> within 1 minute to continue or <:redTick:602811779474522113> if you change your mind.')
+                                f'Please react with <:tick:785940102353780736> within 1 minute to continue or <:cross:785940102542655539> if you change your mind.')
         for e in emojis:
             await prompt.add_reaction(e)
         try:
@@ -56,7 +56,7 @@ class Context(commands.Context):
             await self.send('1 minute has passed. Aborting...', delete_after=5)
             return False
         else:
-            if str(reaction.emoji) == '<:greenTick:602811779835494410>':
+            if str(reaction.emoji) == '<:tick:785940102353780736>':
                 return True
             else:
                 await self.send('Aborting...', delete_after=5)
@@ -69,7 +69,7 @@ class Context(commands.Context):
         emojis = {True:  '<:tick:785940102353780736>',
                   False: '<:cross:785940102542655539>',
                   None:  '<:greyTick:602811779810328596>'}
-        emoji = emojis.get(value, '<:redTick:602811779474522113>')
+        emoji = emojis.get(value, '<:cross:785940102542655539>')
         if reaction:
             with contextlib.suppress(discord.HTTPException):
                 await self.message.add_reaction(emoji)

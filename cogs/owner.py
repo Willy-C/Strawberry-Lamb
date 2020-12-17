@@ -80,7 +80,7 @@ class Owner(commands.Cog):
         else:
             value = stdout.getvalue()
             try:
-                await ctx.message.add_reaction('\u2705')
+                await ctx.tick()
             except:
                 pass
 
