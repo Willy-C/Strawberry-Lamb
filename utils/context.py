@@ -13,6 +13,13 @@ class Context(commands.Context):
     def session(self):
         return self.bot.session
 
+    @discord.utils.cached_property
+    def replied_reference(self):
+        ref = self.message.reference
+        if ref and isinstance(ref.resolved, discord.Message):
+            return ref.resolved.to_reference()
+        return None
+
     async def confirm_prompt(self, msg):
         """Asks author for confirmation, returns True if confirmed, False if user typed abort or timed out"""
         def confirm(m):
@@ -41,13 +48,13 @@ class Context(commands.Context):
                 await prompt.delete()
 
     async def confirm_reaction(self, msg):
-        emojis = ['<:tick:785940102353780736>', '<:cross:785940102542655539>']
+        emojis = ['<:tick:785940102353780736>', '<:mark:785940102542655539>']
 
         def confirm(r, u):
             return self.author.id == u.id and prompt == r.message and str(r.emoji) in emojis
 
         prompt = await self.send(f'{msg}\n'
-                                f'Please react with <:tick:785940102353780736> within 1 minute to continue or <:cross:785940102542655539> if you change your mind.')
+                                f'Please react with <:tick:785940102353780736> within 1 minute to continue or <:mark:785940102542655539> if you change your mind.')
         for e in emojis:
             await prompt.add_reaction(e)
         try:
@@ -67,9 +74,9 @@ class Context(commands.Context):
 
     async def tick(self, value=True, reaction=True):
         emojis = {True:  '<:tick:785940102353780736>',
-                  False: '<:cross:785940102542655539>',
+                  False: '<:mark:785940102542655539>',
                   None:  '<:greyTick:602811779810328596>'}
-        emoji = emojis.get(value, '<:cross:785940102542655539>')
+        emoji = emojis.get(value, '<:mark:785940102542655539>')
         if reaction:
             with contextlib.suppress(discord.HTTPException):
                 await self.message.add_reaction(emoji)
