@@ -33,9 +33,11 @@ class DBoard(commands.Cog):
         else:
             return
         self.is_waiting = True
+        await message.add_reaction('⏰')
         await asyncio.sleep(time_to_sleep)
         await message.channel.send(f'<@&789947627080122368> bump reminder')
         self.is_waiting = False
+        await message.clear_reaction('⏰')
 
 
 def setup(bot):

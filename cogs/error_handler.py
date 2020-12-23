@@ -40,6 +40,9 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(f'Bad argument: {error}')
 
+        elif isinstance(error, commands.MissingRequiredArgument):
+            return await ctx.send(f'Missing required argument: `{error.param.name}` See {ctx.prefix}help {ctx.command} for more info')
+
         elif isinstance(error, commands.MissingPermissions):
             return await ctx.send(f'I cannot complete this command, you are missing the following permission{"" if len(error.missing_perms) == 1 else "s"}: {", ".join(error.missing_perms)}')
 
