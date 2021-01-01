@@ -25,7 +25,7 @@ class Grade(commands.Converter):
         argument = argument.upper()
         role = GRADES.get(argument)
         if role is None:
-            raise commands.BadArgument(f'Invalid grade, must be one of {" ".join(GRADES.keys())}')
+            raise commands.BadArgument(f'Invalid grade, must be one of `{" ".join(GRADES.keys())}`')
         return argument, discord.Object(role)
 
 
@@ -37,7 +37,7 @@ def is_prof():
             return True
         if ctx.author.guild_permissions.administrator:
             return True
-        role = discord.utils.get(ctx.author.roles, id=794394105307332609)
+        role = discord.utils.get(ctx.author.roles, id=763274450107367425)
         if role is not None:
             return True
         raise commands.MissingRole('Professor')
