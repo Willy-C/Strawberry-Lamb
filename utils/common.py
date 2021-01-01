@@ -1,4 +1,6 @@
+import discord
 import traceback
+import typing
 
 
 def cleanup_code(content):
@@ -26,3 +28,12 @@ async def upload_hastebin(bot, content, url='https://mystb.in'):
                 return f'{url}/{(await post.json())["key"]}'
         except:
             traceback.print_exc()
+
+
+async def single_role_in(member, role: typing.Union[int, discord.Role], all_roles: typing.List[int]):
+    """Adds role to member and ensures member only has 1 role from all_roles"""
+    new_roles = [r for r in member.roles if r.id not in all_roles]
+    if isinstance(role, int):
+        role = member.guild.get_role(role)
+    new_roles.append(role)
+    await member.edit(roles=new_roles)

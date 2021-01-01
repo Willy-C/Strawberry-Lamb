@@ -49,6 +49,9 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BotMissingPermissions):
             return await ctx.send(f'I cannot complete this command, I am missing the following permission{"" if len(error.missing_perms) == 1 else "s"}: {", ".join(error.missing_perms)}')
 
+        elif isinstance(error, commands.MissingRole):
+            return await ctx.send(f'You require {error.missing_role} role to use this command.')
+
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send('Sorry, you cannot use this command')
 
