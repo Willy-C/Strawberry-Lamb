@@ -47,14 +47,15 @@ class Context(commands.Context):
             with contextlib.suppress(discord.HTTPException):
                 await prompt.delete()
 
-    async def confirm_reaction(self, msg):
+    async def confirm_reaction(self, msg, allowed_mentions=None):
         emojis = ['<:tick:785940102353780736>', '<:mark:785940102542655539>']
 
         def confirm(r, u):
             return self.author.id == u.id and prompt == r.message and str(r.emoji) in emojis
 
         prompt = await self.send(f'{msg}\n'
-                                f'Please react with <:tick:785940102353780736> within 1 minute to continue or <:mark:785940102542655539> if you change your mind.')
+                                f'Please react with <:tick:785940102353780736> within 1 minute to continue or <:mark:785940102542655539> if you change your mind.',
+                                 allowed_mentions=allowed_mentions)
         for e in emojis:
             await prompt.add_reaction(e)
         try:

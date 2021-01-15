@@ -1,6 +1,8 @@
 import discord
 import traceback
 import typing
+import colorsys
+import random
 
 
 def cleanup_code(content):
@@ -37,3 +39,11 @@ async def single_role_in(member, role: typing.Union[int, discord.Role], all_role
         role = member.guild.get_role(role)
     new_roles.append(role)
     await member.edit(roles=new_roles)
+
+def bright_color():
+    """
+    Returns a random discord.Color that does not look ugly or dull
+    """
+    values = [int(x*255) for x in colorsys.hsv_to_rgb(random.random(), 1, 1)]
+    color = discord.Color.from_rgb(*values)
+    return color
