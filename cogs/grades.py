@@ -4,6 +4,8 @@ from tabulate import tabulate
 
 from datetime import datetime
 
+from utils.converters import CaseInsensitiveMember
+
 PROF_ROLE = 763274450107367425
 
 GRADES = {'A+': 12,
@@ -37,7 +39,8 @@ class Grade(commands.Converter):
         argument = argument.upper()
         role = GRADES.get(argument)
         if role is None:
-            raise commands.BadArgument(f'{argument} is not a valid grade. Must be one of `{" ".join(GRADES.keys())}`')
+            raise commands.BadArgument(f'{argument} is not a valid grade.\n'
+                                       f'Must be one of: `{", ".join(GRADES.keys())}`')
         return argument, discord.Object(role)
 
 
@@ -54,7 +57,8 @@ class Academy(commands.Converter):
                    'market': 'marketing'}
         if argument in aliases:
             return aliases.get(argument)
-        raise commands.BadArgument(f'"{argument}" is not a valid academy!')
+        raise commands.BadArgument(f'"{argument}" is not a valid academy!\n'
+                                   f'Must be one of: `{", ".join(ACADEMIES)}`')
 
 
 def is_prof():
@@ -92,7 +96,7 @@ class Grading(commands.Cog):
 
     @commands.group(invoke_without_command=True, case_insensitive=True)
     @is_prof()
-    async def grade(self, ctx, grade: Grade, academy: Academy, *, user: discord.Member):
+    async def grade(self, ctx, grade: Grade, academy: Academy, *, user: CaseInsensitiveMember):
         """Grade a student"""
         grade, role = grade
         # await single_role_in(user, grade[1], list(GRADES.values()))
@@ -104,7 +108,7 @@ class Grading(commands.Cog):
 
     @grade.command()
     @is_prof()
-    async def remove(self, ctx, academy: Academy, *, user: discord.Member):
+    async def remove(self, ctx, academy: Academy, *, user: CaseInsensitiveMember):
         """Remove the last grade for a student from an academy"""
         query = '''SELECT * FROM grades 
                    WHERE student = $1 AND class = $2
@@ -135,7 +139,7 @@ class Grading(commands.Cog):
         return {k.capitalize(): v for k, v in latest_grades.items()}
 
     @commands.group(invoke_without_command=True, case_insensitive=True, aliases=['rc'])
-    async def reportcard(self, ctx, *, user: discord.Member=None):
+    async def reportcard(self, ctx, *, user: CaseInsensitiveMember=None):
         """Displays a student's report card.
         If no user is given, defaults to command invoker.
         If neither desktop/mobile was specified then it will try to detect whether the invoker is on mobile or not"""
@@ -145,7 +149,7 @@ class Grading(commands.Cog):
             await self.desktop(ctx, user=user)
 
     @reportcard.command()
-    async def desktop(self, ctx, *, user: discord.Member=None):
+    async def desktop(self, ctx, *, user: CaseInsensitiveMember=None):
         """Displays a student's report card in a table
         If no user is given, defaults to command invoker."""
         user = user or ctx.author
@@ -159,7 +163,7 @@ class Grading(commands.Cog):
         await ctx.send(embed=e)
 
     @reportcard.command()
-    async def mobile(self, ctx, *, user: discord.Member=None):
+    async def mobile(self, ctx, *, user: CaseInsensitiveMember=None):
         """Displays a student's report card in a mobile-friendly way
         If no user is given, defaults to command invoker."""
         user = user or ctx.author
