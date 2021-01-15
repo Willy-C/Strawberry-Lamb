@@ -93,6 +93,7 @@ class Grading(commands.Cog):
     @commands.group(invoke_without_command=True, case_insensitive=True)
     @is_prof()
     async def grade(self, ctx, grade: Grade, academy: Academy, *, user: discord.Member):
+        """Grade a student"""
         grade, role = grade
         # await single_role_in(user, grade[1], list(GRADES.values()))
         await ctx.send(f'{user.mention} is given the grade of `{grade}` for `{academy.capitalize()}`')
@@ -104,15 +105,16 @@ class Grading(commands.Cog):
     @grade.command()
     @is_prof()
     async def remove(self, ctx, academy: Academy, *, user: discord.Member):
+        """Remove the last grade for a student from an academy"""
         query = '''SELECT * FROM grades 
-                   WHERE student = $1, class=$2
+                   WHERE student = $1 AND class = $2
                    ORDER BY entry DESC LIMIT 1;'''
         record = await self.bot.pool.fetchrow(query, user.id, academy)
         if record is None:
             return await ctx.send(f'I am unable to find any grades given to {user.mention} for {academy}',
                                   allowed_mentions=discord.AllowedMentions.none())
         if not await ctx.confirm_reaction(f'Are you sure you want to remove the grade of {record["grade"]} given by {ctx.guild.get_member(record["teacher"]).mention} for {record["class"]} for {user.mention}?',
-                                          discord.AllowedMentions(users=[record["teacher"]])): return
+                                          discord.AllowedMentions(users=[discord.Object(record["teacher"])])): return
         # new_roles = [r for r in user.roles if r.id not in list(GRADES.values())]
         # await user.edit(roles=new_roles)
         await ctx.send(f'Removed the last grade ({record["grade"]}) for {user.mention} for {academy}')
@@ -123,17 +125,20 @@ class Grading(commands.Cog):
     async def get_latest_grades(self, user: discord.Member):
         query = '''SELECT * FROM grades WHERE student=$1;'''
         records = await self.bot.pool.fetch(query, user.id)
-        latest_grades = {a.capitalize(): None for a in ACADEMIES}
+        latest_grades = {a: None for a in ACADEMIES}
         for record in records:
             if latest_grades[record['class']] is not None:
                 if GRADES[record['grade']] > GRADES[latest_grades[record['class']]]:
                     latest_grades[record['class']] = (record['grade'], record['teacher'])
             else:
                 latest_grades[record['class']] = (record['grade'], record['teacher'])
-        return latest_grades
+        return {k.capitalize(): v for k, v in latest_grades.items()}
 
     @commands.group(invoke_without_command=True, case_insensitive=True, aliases=['rc'])
     async def reportcard(self, ctx, *, user: discord.Member=None):
+        """Displays a student's report card.
+        If no user is given, defaults to command invoker.
+        If neither desktop/mobile was specified then it will try to detect whether the invoker is on mobile or not"""
         if ctx.author.is_on_mobile():
             await self.mobile(ctx, user=user)
         else:
@@ -141,26 +146,32 @@ class Grading(commands.Cog):
 
     @reportcard.command()
     async def desktop(self, ctx, *, user: discord.Member=None):
+        """Displays a student's report card in a table
+        If no user is given, defaults to command invoker."""
         user = user or ctx.author
         grades = await self.get_latest_grades(user)
-        table = [[a, g[0], g[1]] for a, g in grades.items()]
-        e = discord.Embed(description=tabulate(table, headers=[], tablefmt='fancy_grid', stralign='center'),
+        table = [[a, g[0], ctx.guild.get_member(g[1])] if g is not None else [a, None, None] for a, g in grades.items()]
+        tabulated = tabulate(table, headers=['Academy', 'Grade', 'Professor'], tablefmt='fancy_grid')
+        e = discord.Embed(description=f'```\n{tabulated}\n```',
                           color=user.colour,
                           timestamp=datetime.utcnow())
-        e.set_author(name=user, icon_url=user.icon_url)
+        e.set_author(name=user, icon_url=user.avatar_url)
         await ctx.send(embed=e)
 
     @reportcard.command()
     async def mobile(self, ctx, *, user: discord.Member=None):
+        """Displays a student's report card in a mobile-friendly way
+        If no user is given, defaults to command invoker."""
         user = user or ctx.author
         grades = await self.get_latest_grades(user)
-        description = '\n'.join([f'{a} :: **{g[0]}** ({g[1]})' for a, g in grades.items()])
+        description = '\n'.join([f'{a} :: **{g[0]}** ({ctx.guild.get_member(g[1])})' if g is not None else f'{a} :: No grade' for a, g in grades.items()])
         e = discord.Embed(title='Report Card',
                           description=description,
                           color=user.colour,
                           timestamp=datetime.utcnow())
-        e.set_author(name=user, icon_url=user.icon_url)
+        e.set_author(name=user, icon_url=user.avatar_url)
         await ctx.send(embed=e)
+
 
 def setup(bot):
     bot.add_cog(Grading(bot))
