@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
-from datetime import datetime
 
-from utils import converters
+from utils import converters, checks
 
 
 class General(commands.Cog):
@@ -10,6 +9,7 @@ class General(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @checks.is_admin()
     @commands.bot_has_guild_permissions(manage_webhooks=True)
     async def quote(self, ctx, user: converters.CaseInsensitiveMember, *, message):
         """Send a message as someone else
